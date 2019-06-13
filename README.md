@@ -1,6 +1,7 @@
 Simply RESTFul Web Service with Spring that uses technologies like:
 - Spring Boot
-- MapStruct
 - Spring MVC
+- MapStruct
 - JPA
-- Tests
+- JUnit 4
+- Mockito
