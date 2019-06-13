@@ -2,6 +2,7 @@ package jannkasper.spring.services;
 
 import jannkasper.spring.api.v1.mapper.UserMapper;
 import jannkasper.spring.api.v1.model.UserDTO;
+import jannkasper.spring.controllers.UserController;
 import jannkasper.spring.domain.User;
 import jannkasper.spring.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,6 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    public static final String BASE_URL = "/api/v1/customers";
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -99,6 +99,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getCustomerUrl(Long id) {
-        return BASE_URL + "/" + id;
+        return UserController.BASE_URL + "/" + id;
     }
 }
