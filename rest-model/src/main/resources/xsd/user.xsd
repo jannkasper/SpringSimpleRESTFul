@@ -1,0 +1,17 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="UserListDTO" type="UserListDTOType"/>
+    <xs:complexType name="usersType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="login" minOccurs="0"/>
+            <xs:element type="xs:string" name="password" minOccurs="0"/>
+            <xs:element type="xs:string" name="email" minOccurs="0"/>
+            <xs:element type="xs:string" name="customer_url" minOccurs="0"/>
+            <xs:element type="usersType" name="users" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="UserListDTOType">
+        <xs:sequence>
+            <xs:element type="usersType" name="users"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

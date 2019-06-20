@@ -61,6 +61,7 @@ public class UserControllerTest extends AbstractRestControllerTest{
 
 
         mockMvc.perform(get(UserController.BASE_URL)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.users",hasSize(2)));
@@ -79,6 +80,7 @@ public class UserControllerTest extends AbstractRestControllerTest{
         Mockito.when(userService.getUserById(Mockito.anyLong())).thenReturn(user1);
 
         mockMvc.perform(get(UserController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login", equalTo("Michael")));
@@ -100,6 +102,7 @@ public class UserControllerTest extends AbstractRestControllerTest{
         Mockito.when(userService.createNewUser(user)).thenReturn(returnDTO);
 
         mockMvc.perform(post(UserController.BASE_URL)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(user)))
                 .andExpect(status().isCreated())
@@ -121,6 +124,7 @@ public class UserControllerTest extends AbstractRestControllerTest{
         Mockito.when(userService.saveUserByDTO(Mockito.anyLong(), Mockito.any(UserDTO.class))).thenReturn(returnDTO);
 
         mockMvc.perform(put(UserController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(user)))
                 .andExpect(status().isOk())
@@ -133,6 +137,7 @@ public class UserControllerTest extends AbstractRestControllerTest{
     @Test
     public void deleteUser() throws Exception {
         mockMvc.perform(delete(UserController.BASE_URL + "/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -145,7 +150,7 @@ public class UserControllerTest extends AbstractRestControllerTest{
         when(userService.getUserById(anyLong())).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(get(UserController.BASE_URL + "/222")
-                .contentType(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 }
