@@ -3,6 +3,7 @@ package jannkasper.spring.services;
 import jannkasper.spring.api.v1.mapper.UserMapper;
 import jannkasper.spring.api.v1.model.UserDTO;
 import jannkasper.spring.controllers.UserController;
+import jannkasper.spring.controllers.UserNotFoundException;
 import jannkasper.spring.domain.User;
 import jannkasper.spring.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
                     userDTO.setCustomerUrl(getCustomerUrl(id));
                     return userDTO;
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
 
                     return userDTO;
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
