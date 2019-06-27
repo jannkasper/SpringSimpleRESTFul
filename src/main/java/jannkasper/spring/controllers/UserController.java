@@ -1,13 +1,19 @@
 package jannkasper.spring.controllers;
 
 import jannkasper.spring.api.v1.model.UserDTO;
-import jannkasper.spring.api.v1.model.UserListDTO;
 import jannkasper.spring.services.UserService;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 //  FIND ALL
 //  curl -v localhost:8080/
@@ -15,7 +21,7 @@ import java.util.Map;
 //  FIND ONE - GET  /api/users/4
 //  curl -v localhost:8080/api/users/4
 
-//  FIND ONE  - GET  /api/users/99  [TEST 404]
+//  FIND ONE  - GET  /api/users/99  [ERROR 404]
 //  curl -v localhost:8080/api/users/99
 
 //  SAVE - POST    -d {json}
@@ -24,7 +30,7 @@ import java.util.Map;
 //  UPDATE - PATCH  /api/users/4
 //  curl -v -X PATCH localhost:8080/api/users/4 -H "Content-type:application/json" -d "{\"login\":\"Andrew\",\"password\":\"andrew4\",\"email\":\"andrew@gmail.com\"}"
 
-//  UPDATE - PATCH  /api/users/4    [TEST 405]
+//  UPDATE - PATCH  /api/users/4    [ERROR 405]
 //  curl -v -X PATCH localhost:8080/api/users/4 -H "Content-type:application/json" -d "{\"email\":\"andrew@hotmail.com\"}"
 
 @RestController
@@ -33,21 +39,42 @@ public class UserController {
     public static final String BASE_URL = "/api/users";
 
     private final UserService userService;
+    private final UserResourceAssembler assembler;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserResourceAssembler assembler) {
         this.userService = userService;
+        this.assembler = assembler;
     }
 
-    @GetMapping
+    //    @GetMapping({"/users"})
+//    @ResponseStatus(HttpStatus.OK)
+//    public UserListDTO getListOfUsers() {
+//        return new UserListDTO(userService.getAllUsers());
+//    }
+
+    @GetMapping({"/users"})
     @ResponseStatus(HttpStatus.OK)
-    public UserListDTO getListOfUsers() {
-        return new UserListDTO(userService.getAllUsers());
+    public Resources<Resource<UserDTO>> getListOfUsers() {
+
+        List<Resource<UserDTO>> users = userService.getAllUsers()
+                .stream()
+                .map(assembler::toResource)
+                .collect(Collectors.toList());
+
+        return new Resources<>(users,linkTo(methodOn(UserController.class).getListOfUsers()).withSelfRel());
     }
+
+//    @GetMapping({BASE_URL + "/{id}"})
+//    @ResponseStatus(HttpStatus.OK)
+//    public UserDTO getUserById (@PathVariable Long id) {
+//        return userService.getUserById(id);
+//    }
 
     @GetMapping({BASE_URL + "/{id}"})
     @ResponseStatus(HttpStatus.OK)
-    public UserDTO getUserById (@PathVariable Long id) {
-        return userService.getUserById(id);
+    public Resource<UserDTO> getUserResourceById (@PathVariable Long id) {
+        UserDTO userDTO = userService.getUserById(id);
+        return assembler.toResource(userDTO);
     }
 
     @PostMapping
