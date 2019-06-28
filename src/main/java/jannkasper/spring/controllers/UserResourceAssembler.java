@@ -1,6 +1,7 @@
 package jannkasper.spring.controllers;
 
 import jannkasper.spring.api.v1.model.UserDTO;
+import jannkasper.spring.domain.Status;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -13,9 +14,20 @@ public class UserResourceAssembler implements ResourceAssembler<UserDTO, Resourc
 
     @Override
     public Resource<UserDTO> toResource(UserDTO userDTO) {
-        return new Resource<>(userDTO,
+        Resource<UserDTO> userResource = new Resource<>(userDTO,
                 linkTo(methodOn(UserController.class).getUserResourceById(Long.valueOf(userDTO.getCustomerUrl().replaceAll("\\D+","")))).withSelfRel(),
                 linkTo(methodOn(UserController.class).getListOfUsers()).withRel("users"));
+
+        if(userDTO.getStatus()== Status.IN_PROGRESS) {
+            userResource.add(linkTo(methodOn(UserController.class).remove(Long.valueOf(userDTO.getCustomerUrl().replaceAll("\\D+","")))).withRel("remove"));
+            userResource.add(linkTo(methodOn(UserController.class).active(Long.valueOf(userDTO.getCustomerUrl().replaceAll("\\D+","")))).withRel("active")); }
+
+        if(userDTO.getStatus()==Status.ACTIVE){
+            userResource.add(linkTo(methodOn(UserController.class).remove(Long.valueOf(userDTO.getCustomerUrl().replaceAll("\\D+","")))).withRel("remove"));
+
+        }
+
+        return userResource;
 
     }
 }

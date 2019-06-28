@@ -15,6 +15,7 @@ public class UserMapperImpl implements UserMapper {
         userDTO.setLogin(user.getLogin());
         userDTO.setPassword(user.getPassword());
         userDTO.setEmail(user.getEmail());
+        userDTO.setStatus(user.getStatus());
         return userDTO;
     }
 
@@ -27,6 +28,7 @@ public class UserMapperImpl implements UserMapper {
         user.setLogin(userDTO.getLogin());
         user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
+        user.setStatus(userDTO.getStatus());
         return user;
     }
 }

@@ -1,10 +1,14 @@
 package jannkasper.spring.controllers;
 
 import jannkasper.spring.api.v1.model.UserDTO;
+import jannkasper.spring.domain.Status;
 import jannkasper.spring.services.UserService;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.VndErrors;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,6 +84,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDTO createUser (@RequestBody UserDTO userDTO){
+        userDTO.setStatus(Status.IN_PROGRESS);
         return userService.createNewUser(userDTO);
     }
 
@@ -127,5 +132,38 @@ public class UserController {
     public void deleteUser(@PathVariable Long id){
         userService.deleteUserById(id);
     }
+
+    @DeleteMapping({BASE_URL + "/{id}/remove"})
+    @ResponseStatus(HttpStatus.OK)
+    ResponseEntity<ResourceSupport> remove(@PathVariable Long id) {
+        UserDTO userDTO = userService.getUserById(id);
+
+        if(userDTO.getStatus() != Status.REMOVE){
+            userDTO.setStatus(Status.REMOVE);
+            return ResponseEntity.ok(assembler.toResource(userService.saveUserByDTO(id, userDTO)));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new VndErrors.VndError("Method not allowed", "You can't remove a user that is in the " + userDTO.getStatus() + " status"));
+
+    }
+
+    @PutMapping({BASE_URL + "/{id}/active"})
+    @ResponseStatus(HttpStatus.OK)
+    ResponseEntity<ResourceSupport> active(@PathVariable Long id) {
+        UserDTO userDTO = userService.getUserById(id);
+
+        if(userDTO.getStatus() == Status.IN_PROGRESS){
+            userDTO.setStatus(Status.ACTIVE);
+            return ResponseEntity.ok(assembler.toResource(userService.saveUserByDTO(id, userDTO)));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new VndErrors.VndError("Method not allowed", "You can't active a user that is in the " + userDTO.getStatus() + " status"));
+
+    }
+
 
 }

@@ -85,6 +85,9 @@ public class UserServiceImpl implements UserService {
                     if(userDTO.getEmail() != null){
                         user.setEmail(userDTO.getEmail());
                     }
+                    if(userDTO.getStatus() != null){
+                        user.setStatus(userDTO.getStatus());
+                    }
                     UserDTO returnDTO = userMapper.userToUserDTO(userRepository.save(user));
                     returnDTO.setCustomerUrl(getCustomerUrl(user.getId()));
 
