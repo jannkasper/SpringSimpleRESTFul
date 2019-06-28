@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +31,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 //  curl -v localhost:8080/api/users/99
 
 //  SAVE - POST    -d {json}
-//  curl -v -X POST localhost:8080/api/users/4 -H "Content-type:application/json" -d "{\"login\":\"Andrew\",\"password\":\"andrew4\",\"email\":\"andrew@gmail.com\"}"
+//  curl -v -X POST localhost:8080/api/users/4 -H "Content-type:application/json" -d "{\"login\":\"Andrew\",\"password\":\"andrew\",\"email\":\"andrew@gmail.com\"}"
 
 //  UPDATE - PATCH  /api/users/4
 //  curl -v -X PATCH localhost:8080/api/users/4 -H "Content-type:application/json" -d "{\"login\":\"Andrew\",\"password\":\"andrew4\",\"email\":\"andrew@gmail.com\"}"
@@ -76,14 +78,14 @@ public class UserController {
 
     @GetMapping({BASE_URL + "/{id}"})
     @ResponseStatus(HttpStatus.OK)
-    public Resource<UserDTO> getUserResourceById (@PathVariable Long id) {
+    public Resource<UserDTO> getUserResourceById (@PathVariable @Min(1) Long id) {
         UserDTO userDTO = userService.getUserById(id);
         return assembler.toResource(userDTO);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser (@RequestBody UserDTO userDTO){
+    public UserDTO createUser (@Valid @RequestBody UserDTO userDTO){
         userDTO.setStatus(Status.IN_PROGRESS);
         return userService.createNewUser(userDTO);
     }
